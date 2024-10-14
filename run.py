@@ -16,16 +16,13 @@ SHEET = GSPREAD_CLIENT.open('workouts')
 sheet_exercises = SHEET.worksheet("exercises")
 exercises_data = sheet_exercises.get_all_records()
 
-# Save new workouts to spreadsheet
-sheet_saved_workouts = SHEET.worksheet("saved_workouts")
-workout_to_save = []
-sheet_saved_workouts.append_row(workout_to_save)
-# print("Workout successfully saved")
 
 def main_menu():
     print("Welcome to the Workout Generator")
+    print("-----------------------")
     print("1. Create a new workout")
     print("2. Show saved workouts")
+    print("-----------------------")
 
     choice = input("Please choose an option (1 or 2): ")
 
@@ -36,5 +33,16 @@ def main_menu():
     else:
         print("Invalid input, please choose 1 or 2.")
         main_menu()
+
+
+def create_workout():
+    print("Workout creation logic will be here.")
+
+
+def show_saved_workouts():
+    sheet_saved_workouts = SHEET.worksheet("saved_workouts")
+    saved_workouts_data = sheet_saved_workouts.get_all_records()
+    print(saved_workouts_data)
+
 
 main_menu()
