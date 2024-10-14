@@ -37,38 +37,87 @@ def create_workout():
     workout_duration = int(
         input(
             "How many minutes would you like to workout? "
-            "Please enter a number between 10 and 90 minutes: "
+            "(Please enter a number between 10 and 90): "
         )
     )
 
-    # Pull exercises from spreadsheet
+    # Pull warm up, cooldown and exercises from spreadsheet
     sheet_exercises = SHEET.worksheet("exercises")
     exercises_data = sheet_exercises.get_all_records()
-
+    sheet_warm_up = SHEET.worksheet("warm_up")
+    warm_up_data = sheet_warm_up.get_all_records()
+    sheet_cool_down = SHEET.worksheet("cool_down")
+    cool_down_data = sheet_cool_down.get_all_records()
+    # Generate warm-Up
+    print("Warm-Up:")
+    print("--------")
+    warm_up_exercise = random.choice(warm_up_data)
+    print(
+        f"{warm_up_exercise['Exercise']}: "
+        f"{warm_up_exercise['Repetitions/Duration']} reps")
+    # Generate main workout
     workout_plan = generate_workout(exercises_data, workout_duration)
 
-    print("Your workout plan: ")
+    print("Your workout plan:")
+    print("------------------")
     for exercise in workout_plan:
-        print(exercise)
+        print(
+            f"{exercise['Exercise']} ({exercise['Muscle Group']}): "
+            f"{exercise['Repetitions/Duration']} reps"
+        )
+
+    # Generate cool-down
+    print("Cool-Down:")
+    print("----------")
+    cool_down_exercise = random.choice(cool_down_data)
+    print(
+        f"{cool_down_exercise['Exercise']}: "
+        f"{cool_down_exercise['Repetitions/Duration']} reps")
 
 
 def generate_workout(exercises_data, workout_duration):
     total_time = 0
     workout_plan = []
+    muscle_groups = set(
+        exercise['Muscle Group'] for exercise in exercises_data
+    )
+
+    print(f"Target workout duration: {workout_duration} minutes")
 
     while total_time < workout_duration:
-        random_exercise = random.choice(exercises_data)
-        print(random_exercise)
-        exercise_time = (
-            random_exercise.get("Repetitions/Duration", 0)
-            * random_exercise.get("Time per Rep (Sec)", 0) / 60
-        )
+        no_exercise_added = True
 
-        if total_time + exercise_time <= workout_duration:
-            workout_plan.append(random_exercise)
-            total_time += exercise_time
-        else:
+        for muscle_group in muscle_groups:
+            if total_time >= workout_duration:
+                break
+
+            muscle_exercises = [
+                exercise for exercise in exercises_data
+                if exercise['Muscle Group'] == muscle_group
+            ]
+            if muscle_exercises:
+                random_exercise = random.choice(muscle_exercises)
+                exercise_time = (
+                    random_exercise.get("Repetitions/Duration", 0)
+                    * random_exercise.get("Time per Rep (Sec)", 0) / 60
+                )
+                print(
+                    f"Selected Exercise: {random_exercise['Exercise']} "
+                    f" - Time: {exercise_time} minutes"
+                )
+
+                if total_time + exercise_time <= workout_duration:
+                    workout_plan.append(random_exercise)
+                    total_time += exercise_time
+                    print(f"Total Time so far: {total_time} minutes")
+                    no_exercise_added = False
+                else:
+                    print("Exercise skipped - would exceed workout duration")
+
+        if no_exercise_added:
+            print("No more exercises can be added, workout complete.")
             break
+    print("Workout time limit reached!")
     return workout_plan
 
 
