@@ -133,11 +133,17 @@ def generate_workout(exercises_data, workout_duration):
 
 
 def print_sorted_workout(workout_plan, warm_up_data, cool_down_data):
+    # ANSI color codes
+    ORANGE = "\033[33m"
+    GREEN = "\033[32m"
+    BLUE = "\033[34m"
+    RESET = "\033[0m"
+
     print("\nYour sorted workout plan:")
     print("------------------------")
 
     # Display Warm-up
-    print("\nWarm-Up:")
+    print(f"\n{ORANGE}Warm-Up:{RESET}")
     print("----------")
     for warm_up_exercise in warm_up_data:
         print(
@@ -147,7 +153,7 @@ def print_sorted_workout(workout_plan, warm_up_data, cool_down_data):
 
     # Display Main Workout
     categories = ["Legs", "Chest", "Core", "Shoulders", "Back"]
-    print("\nMain Workout:")
+    print(f"\n{GREEN}Main Workout:{RESET}")
     print("---------------")
     for category in categories:
         exercise_in_category = [
@@ -163,7 +169,7 @@ def print_sorted_workout(workout_plan, warm_up_data, cool_down_data):
                     f"{exercise['Repetitions/Duration']} reps"
                 )
     # Display Cool-Down
-    print("\nCool-Down:")
+    print(f"\n{BLUE}Cool-Down:{RESET}")
     print("------------")
     for cool_down_exercise in cool_down_data:
         print(
