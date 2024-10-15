@@ -51,25 +51,11 @@ def create_workout():
     sheet_cool_down = SHEET.worksheet("cool_down")
     cool_down_data = sheet_cool_down.get_all_records()
 
-    # Fixed warm-up exercises
-    print("Warm-Up:")
-    print("--------")
-    for warm_up_exercise in warm_up_data:
-        print(
-            f"{warm_up_exercise['Exercise']}: "
-            f"{warm_up_exercise['Repetitions/Duration']} reps"
-        )
-
-    print("\nStarting Main Workout...\n")
-
     # Generate main workout
     workout_plan = generate_workout(exercises_data, workout_duration)
 
-    # Sort and print the workout
-    print_sorted_workout(workout_plan)
-
-    # Save the workout
-    save_workout(workout_plan)
+    # Display the complete workout (Warm-Up, Main Workout, Cool-Down)
+    print_sorted_workout(workout_plan, warm_up_data, cool_down_data)
 
     # Question if workout should be saved
     while True:
@@ -83,15 +69,6 @@ def create_workout():
             break
         else:
             print("Invalid input, please enter 'y' or 'n'.")
-
-    # Fixed cool-down exercises
-    print("\nCool-Down:")
-    print("----------")
-    for cool_down_exercise in cool_down_data:
-        print(
-            f"{cool_down_exercise['Exercise']}: "
-            f"{cool_down_exercise['Repetitions/Duration']} reps"
-        )
 
 
 def generate_workout(exercises_data, workout_duration):
@@ -155,10 +132,23 @@ def generate_workout(exercises_data, workout_duration):
     return workout_plan
 
 
-def print_sorted_workout(workout_plan):
-    categories = ["Legs", "Chest", "Core", "Shoulders", "Back"]
+def print_sorted_workout(workout_plan, warm_up_data, cool_down_data):
     print("\nYour sorted workout plan:")
     print("------------------------")
+
+    # Display Warm-up
+    print("\nWarm-Up:")
+    print("----------")
+    for warm_up_exercise in warm_up_data:
+        print(
+            f"{warm_up_exercise['Exercise']}: "
+            f"{warm_up_exercise['Repetitions/Duration']} reps"
+        )
+
+    # Display Main Workout
+    categories = ["Legs", "Chest", "Core", "Shoulders", "Back"]
+    print("\nMain Workout:")
+    print("---------------")
     for category in categories:
         exercise_in_category = [
             exercise for exercise in workout_plan
@@ -172,6 +162,14 @@ def print_sorted_workout(workout_plan):
                     f"{exercise['Exercise']} ({exercise['Muscle Group']}): "
                     f"{exercise['Repetitions/Duration']} reps"
                 )
+    # Display Cool-Down
+    print("\nCool-Down:")
+    print("------------")
+    for cool_down_exercise in cool_down_data:
+        print(
+            f"{cool_down_exercise['Exercise']}: "
+            f"{cool_down_exercise['Repetitions/Duration']} reps"
+        )
 
 
 def save_workout(workout_plan):
@@ -181,16 +179,25 @@ def save_workout(workout_plan):
     # Todays date
     today = datetime.now().strftime("%Y-%m-%d")
 
-    for exercise in workout_plan:
-        row = [
-            today, "Main Workout",
-            exercise['Muscle Group'],
-            exercise['Exercise'],
-            exercise['Repetitions/Duration'],
-            exercise.get('Time per Rep (Sec)', 'N/A'),
-            exercise['Difficulty Level']
+    # Sort and save categories
+    categories = ["Legs", "Chest", "Core", "Shoulders", "Back"]
+
+    for category in categories:
+        exercise_in_category = [
+            exercise for exercise in workout_plan
+            if exercise["Muscle Group"] == category
         ]
-        sheet_saved_workouts.append_row(row)
+        if exercise_in_category:
+            for exercise in exercise_in_category:
+                row = [
+                    today, "Main Workout",
+                    exercise['Muscle Group'],
+                    exercise['Exercise'],
+                    exercise['Repetitions/Duration'],
+                    exercise.get('Time per Rep (Sec)', 'N/A'),
+                    exercise['Difficulty Level']
+                ]
+                sheet_saved_workouts.append_row(row)
     print("Workout successfully saved!")
 
 
