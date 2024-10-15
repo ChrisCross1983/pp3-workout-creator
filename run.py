@@ -36,12 +36,21 @@ def main_menu():
 
 def create_workout():
     # Ask user for the desired training time
-    workout_duration = int(
-        input(
-            "How many minutes would you like to workout? "
-            "(Please enter a number between 10 and 90): "
-        )
-    )
+    while True:
+        try:
+            workout_duration = int(
+                input(
+                    "How many minutes would you like to workout? "
+                    "(Please enter a number between 10 and 90): "
+                    )
+                )
+            if 10 <= workout_duration <= 90:
+                break
+            else:
+                print("Invalid input. Please enter a number "
+                      "between 10 and 90.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
 
     # Pull warm up, cooldown and exercises from spreadsheet
     sheet_exercises = SHEET.worksheet("exercises")
@@ -216,6 +225,25 @@ def show_saved_workouts():
             print(workout)
     else:
         print("No saved workouts found.")
+
+    # Possibility to retrun to the main menu
+
+    while True:
+        choice = input(
+            "\nWould you like to back to the "
+            "main menu (m) or exit (e)?"
+        ).lower()
+        if choice == 'm':
+            main_menu()
+            break
+        elif choice == 'e':
+            print("Closing the program. Goodbye!")
+            exit()
+        else:
+            print(
+                "Invalid input. Please enter 'm' to return"
+                " to the main men or 'e' to exit."
+            )
 
 
 main_menu()
