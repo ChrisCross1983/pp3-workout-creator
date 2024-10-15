@@ -19,19 +19,23 @@ SHEET = GSPREAD_CLIENT.open('workouts')
 
 def main_menu():
     print("Welcome to the Workout Generator")
-    print("-----------------------")
+    print("--------------------------------")
     print("1. Create a new workout")
     print("2. Show saved workouts")
-    print("-----------------------")
+    print("3. Exit Program")
+    print("--------------------------------")
 
-    choice = input("Please choose an option (1 or 2): ")
+    choice = input("Please choose an option (1, 2 or 3): ")
 
     if choice == "1":
         create_workout()
     elif choice == "2":
         show_saved_workouts()
+    elif choice == "3":
+        print("Goodbye! Closing the program.")
+        exit()
     else:
-        print("Invalid input, please choose 1 or 2.")
+        print("Invalid input, please choose 1, 2 or 3.")
         main_menu()
 
 
@@ -83,6 +87,8 @@ def create_workout():
             break
         else:
             print("Invalid input, please enter 'y' or 'n'.")
+
+    return_to_menu_or_exit()
 
 
 def generate_workout(exercises_data, workout_duration):
@@ -224,8 +230,11 @@ def show_saved_workouts():
     else:
         print("No saved workouts found.")
 
-    # Possibility to retrun to the main menu
+    return_to_menu_or_exit()
 
+
+def return_to_menu_or_exit():
+    # Possibility to retrun to the main menu or close the program
     while True:
         choice = input(
             "\nWould you like to back to the "
