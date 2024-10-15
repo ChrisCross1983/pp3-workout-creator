@@ -46,29 +46,51 @@ def create_workout():
             workout_duration = int(
                 input(
                     "How many minutes would you like to workout? "
-                    "(Please enter a number between 10 and 90): "
+                    "(Please enter a number between 10 and 60): "
                     )
                 )
-            if 10 <= workout_duration <= 90:
+            if 10 <= workout_duration <= 60:
                 print("Workout will be created for you. Please wait...")
                 time.sleep(2)
                 break
             else:
                 print("Invalid input. Please enter a number "
-                      "between 10 and 90.")
+                      "between 10 and 60.")
         except ValueError:
             print("Invalid input. Please enter a valid number.")
+
+    # Ask user for the difficulty level
+    while True:
+        difficulty = input(
+            "Please choose your difficulty level (easy, medium, hard): "
+            ).lower()
+        if difficulty in ["easy", "medium", "hard"]:
+            print(
+                f"Workout will be created with difficulty"
+                f" '{difficulty}'. Please wait..."
+            )
+            time.sleep(2)
+            break
+        else:
+            print("Invalid input. Please enter 'easy', 'medium', or 'hard'.")
 
     # Pull warm up, cooldown and exercises from spreadsheet
     sheet_exercises = SHEET.worksheet("exercises")
     exercises_data = sheet_exercises.get_all_records()
+
+    # Filter exercises based on selected level
+    filtered_exercises = [
+        exercise for exercise in exercises_data
+        if exercise['Difficulty Level'].lower() == difficulty
+    ]
+
     sheet_warm_up = SHEET.worksheet("warm_up")
     warm_up_data = sheet_warm_up.get_all_records()
     sheet_cool_down = SHEET.worksheet("cool_down")
     cool_down_data = sheet_cool_down.get_all_records()
 
     # Generate main workout
-    workout_plan = generate_workout(exercises_data, workout_duration)
+    workout_plan = generate_workout(filtered_exercises, workout_duration)
 
     # Display the complete workout (Warm-Up, Main Workout, Cool-Down)
     print_sorted_workout(workout_plan, warm_up_data, cool_down_data)
@@ -236,18 +258,18 @@ def show_saved_workouts():
 
     for date, workouts in grouped_workouts.items():
         print(f"\nWorkout for: {date}")
-        print("--------------------------------------------------------------")
+        print("-------------------------")
         print(
             f"| {'Muscle Group':<12} | {'Exercise':<18} |"
             f" {'Reps/Duration':<14} | {'Difficulty':<10} |")
-        print("--------------------------------------------------------------")
+        print("-------------------------")
         for workout in workouts:
             print(
                 f"| {workout['Muscle Group']:<12} | {workout['Exercise']:<18}"
                 f"| {workout['Repetitions/Duration']:<14}"
                 f"| {workout['Difficulty Level']:<10} |"
             )
-        print("--------------------------------------------------------------")
+        print("-------------------------")
 
     if not saved_workouts_data:
         print("No saved workouts found.")
