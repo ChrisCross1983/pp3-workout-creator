@@ -1,6 +1,7 @@
 import gspread
 from google.oauth2.service_account import Credentials
 import random
+import math
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -86,40 +87,53 @@ def generate_workout(exercises_data, workout_duration):
     workout_plan = []
     used_exercises = []
 
-    # Calculate average exercising time per set
-    average_exercise_time = sum([
-        (exercise['Repetitions/Duration'] * exercise['Time per Rep (Sec)'] / 60)
-        for exercise in exercises_data
-    ]) / len(exercises_data)
+    # Defining muscle groups
+    muscle_groups = set(
+        exercise['Muscle Group'] for exercise in exercises_data
+    )
 
-    # Limit max sets per exercise
-    max_sets_per_exercise = 3
-
-    # Estimate total number of sets possible within workout duration
-    estimated_total_sets = int(workout_duration / average_exercise_time)
-    print(f"Total estimated sets for the workout: {estimated_total_sets}")
-
-    # Generate Workout
-    while total_time < workout_duration:
-        random_exercise = random.choice(exercises_data)
-
-        if random_exercise not in used_exercises:
-            exercise_time = (
-                random_exercise['Repetitions/Duration'] * random_exercise['Time per Rep (Sec)'] / 60
+    print(f"Target workout duration: {workout_duration} minutes")
+    # Step 1: Choose minimum one exercise of each muscle group
+    for muscle_group in muscle_groups:
+        muscle_exercises = [
+            exercise for exercise in exercises_data
+            if exercise['Muscle Group'] == muscle_group
+        ]
+        if muscle_exercises:
+            random_exercise = random.choice(muscle_exercises)
+            exercise_time = math.ceil(
+                random_exercise.get('Repetitions/Duration', 0)
+                * random_exercise.get('Time per Rep (Sec)', 0) / 60
             )
-            # Dynamically calculate how many sets for this exercise
-            sets_for_this_exercise = min(max_sets_per_exercise, int((workout_duration - total_time) / exercise_time))
+            if total_time + exercise_time <= workout_duration:
+                workout_plan.append(random_exercise)
+                used_exercises.append(random_exercise)
+                total_time += exercise_time
+                print(f"Selected: {random_exercise['Exercise']} - Time: {exercise_time} minutes")
 
-            for _ in range(sets_for_this_exercise):
-                if total_time + exercise_time <= workout_duration:
-                    workout_plan.append(random_exercise)
-                    total_time += exercise_time
-                else:
-                    break
-            used_exercises.append(random_exercise)
-            
-        if total_time >= workout_duration:
+    # Step 2: Fill the remaining time with random exercises
+    while total_time < workout_duration:
+        remaining_exercises = [
+            exercise for exercise in exercises_data
+            if exercise not in used_exercises
+        ]
+        if remaining_exercises:
+            random_exercise = random.choice(remaining_exercises)
+            exercise_time = (
+                random_exercise.get('Repetitions/Duration')
+                * random_exercise.get('Time per Rep (Sec)') / 60
+            )
+            if total_time + exercise_time <= workout_duration:
+                workout_plan.append(random_exercise)
+                used_exercises.append(random_exercise)
+                total_time += exercise_time
+                print(f"Selected: {random_exercise['Exercise']} - Time: {exercise_time} minutes")
+            else:
+                break
+        else:
+            print("No more exercises can be added, workout complete.")
             break
+    print("Workout time limit reached!")
     return workout_plan
 
 
