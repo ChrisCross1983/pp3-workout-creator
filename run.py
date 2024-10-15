@@ -64,13 +64,16 @@ def create_workout():
     # Generate main workout
     workout_plan = generate_workout(exercises_data, workout_duration)
 
-    print("Your workout plan:")
+    # Sort and print the workout
+    print_sorted_workout(workout_plan)
+
+    """print("Your workout plan:")
     print("------------------")
     for exercise in workout_plan:
         print(
             f"{exercise['Exercise']} ({exercise['Muscle Group']}): "
             f"{exercise['Repetitions/Duration']} reps"
-        )
+        )"""
 
     # Fixed cool-down exercises
     print("\nCool-Down:")
@@ -109,7 +112,10 @@ def generate_workout(exercises_data, workout_duration):
                 workout_plan.append(random_exercise)
                 used_exercises.append(random_exercise)
                 total_time += exercise_time
-                print(f"Selected: {random_exercise['Exercise']} - Time: {exercise_time} minutes")
+                print(
+                    f"Selected: {random_exercise['Exercise']}"
+                    f" - Time: {exercise_time} minutes"
+                )
 
     # Step 2: Fill the remaining time with random exercises
     while total_time < workout_duration:
@@ -127,7 +133,10 @@ def generate_workout(exercises_data, workout_duration):
                 workout_plan.append(random_exercise)
                 used_exercises.append(random_exercise)
                 total_time += exercise_time
-                print(f"Selected: {random_exercise['Exercise']} - Time: {exercise_time} minutes")
+                print(
+                    f"Selected: {random_exercise['Exercise']}"
+                    f"- Time: {exercise_time} minutes"
+                )
             else:
                 break
         else:
@@ -135,6 +144,25 @@ def generate_workout(exercises_data, workout_duration):
             break
     print("Workout time limit reached!")
     return workout_plan
+
+
+def print_sorted_workout(workout_plan):
+    categories = ["Legs", "Chest", "Core", "Shoulders", "Back"]
+    print("\nYour sorted workout plan:")
+    print("------------------------")
+    for category in categories:
+        exercise_in_category = [
+            exercise for exercise in workout_plan
+            if exercise["Muscle Group"] == category
+        ]
+        if exercise_in_category:
+            print(f"\n{category} exercises:")
+            print("------------------------")
+            for exercise in exercise_in_category:
+                print(
+                    f"{exercise['Exercise']} ({exercise['Muscle Group']}): "
+                    f"{exercise['Repetitions/Duration']} reps"
+                )
 
 
 def show_saved_workouts():
