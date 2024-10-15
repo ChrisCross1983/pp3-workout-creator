@@ -3,6 +3,7 @@ from google.oauth2.service_account import Credentials
 import random
 import math
 from datetime import datetime
+import time
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -45,6 +46,8 @@ def create_workout():
                     )
                 )
             if 10 <= workout_duration <= 90:
+                print("Workout will be created for you. Please wait...")
+                time.sleep(2)
                 break
             else:
                 print("Invalid input. Please enter a number "
@@ -71,6 +74,8 @@ def create_workout():
         save_choice = input(
             "\nDo you want to save this workout? (y/n): ").lower()
         if save_choice == 'y':
+            print("Please wait, your workout will be saved...")
+            time.sleep(2)
             save_workout(workout_plan)
             break
         elif save_choice == 'n':
@@ -90,7 +95,6 @@ def generate_workout(exercises_data, workout_duration):
         exercise['Muscle Group'] for exercise in exercises_data
     )
 
-    print(f"Target workout duration: {workout_duration} minutes")
     # Step 1: Choose minimum one exercise of each muscle group
     for muscle_group in muscle_groups:
         muscle_exercises = [
@@ -107,10 +111,6 @@ def generate_workout(exercises_data, workout_duration):
                 workout_plan.append(random_exercise)
                 used_exercises.append(random_exercise)
                 total_time += exercise_time
-                print(
-                    f"Selected: {random_exercise['Exercise']}"
-                    f" - Time: {exercise_time} minutes"
-                )
 
     # Step 2: Fill the remaining time with random exercises
     while total_time < workout_duration:
@@ -128,16 +128,11 @@ def generate_workout(exercises_data, workout_duration):
                 workout_plan.append(random_exercise)
                 used_exercises.append(random_exercise)
                 total_time += exercise_time
-                print(
-                    f"Selected: {random_exercise['Exercise']}"
-                    f"- Time: {exercise_time} minutes"
-                )
             else:
                 break
         else:
-            print("No more exercises can be added, workout complete.")
             break
-    print("Workout time limit reached!")
+
     return workout_plan
 
 
@@ -217,6 +212,9 @@ def save_workout(workout_plan):
 
 
 def show_saved_workouts():
+    print("Fetching saved workouts... Please wait...")
+    time.sleep(2)
+
     # Get saved workouts from spreadsheet
     sheet_saved_workouts = SHEET.worksheet("saved_workouts")
     saved_workouts_data = sheet_saved_workouts.get_all_records()
