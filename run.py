@@ -2,6 +2,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 import random
 import math
+from datetime import datetime
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -67,13 +68,21 @@ def create_workout():
     # Sort and print the workout
     print_sorted_workout(workout_plan)
 
-    """print("Your workout plan:")
-    print("------------------")
-    for exercise in workout_plan:
-        print(
-            f"{exercise['Exercise']} ({exercise['Muscle Group']}): "
-            f"{exercise['Repetitions/Duration']} reps"
-        )"""
+    # Save the workout
+    save_workout(workout_plan)
+
+    # Question if workout should be saved
+    while True:
+        save_choice = input(
+            "\nDo you want to save this workout? (y/n): ").lower()
+        if save_choice == 'y':
+            save_workout(workout_plan)
+            break
+        elif save_choice == 'n':
+            print("Workout was not saved.")
+            break
+        else:
+            print("Invalid input, please enter 'y' or 'n'.")
 
     # Fixed cool-down exercises
     print("\nCool-Down:")
@@ -163,6 +172,26 @@ def print_sorted_workout(workout_plan):
                     f"{exercise['Exercise']} ({exercise['Muscle Group']}): "
                     f"{exercise['Repetitions/Duration']} reps"
                 )
+
+
+def save_workout(workout_plan):
+    # Save the workout to the Spreadsheet 'saved_workouts'
+    sheet_saved_workouts = SHEET.worksheet("saved_workouts")
+
+    # Todays date
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    for exercise in workout_plan:
+        row = [
+            today, "Main Workout",
+            exercise['Muscle Group'],
+            exercise['Exercise'],
+            exercise['Repetitions/Duration'],
+            exercise.get('Time per Rep (Sec)', 'N/A'),
+            exercise['Difficulty Level']
+        ]
+        sheet_saved_workouts.append_row(row)
+    print("Workout successfully saved!")
 
 
 def show_saved_workouts():
