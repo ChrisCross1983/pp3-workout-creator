@@ -224,10 +224,32 @@ def show_saved_workouts():
     # Get saved workouts from spreadsheet
     sheet_saved_workouts = SHEET.worksheet("saved_workouts")
     saved_workouts_data = sheet_saved_workouts.get_all_records()
-    if saved_workouts_data:
-        for workout in saved_workouts_data:
-            print(workout)
-    else:
+
+    # Group workouts by date
+    grouped_workouts = {}
+
+    for workout in saved_workouts_data:
+        date = workout['Date']
+        if date not in grouped_workouts:
+            grouped_workouts[date] = []
+        grouped_workouts[date].append(workout)
+
+    for date, workouts in grouped_workouts.items():
+        print(f"\nWorkout for: {date}")
+        print("--------------------------------------------------------------")
+        print(
+            f"| {'Muscle Group':<12} | {'Exercise':<18} |"
+            f" {'Reps/Duration':<14} | {'Difficulty':<10} |")
+        print("--------------------------------------------------------------")
+        for workout in workouts:
+            print(
+                f"| {workout['Muscle Group']:<12} | {workout['Exercise']:<18}"
+                f"| {workout['Repetitions/Duration']:<14}"
+                f"| {workout['Difficulty Level']:<10} |"
+            )
+        print("--------------------------------------------------------------")
+
+    if not saved_workouts_data:
         print("No saved workouts found.")
 
     return_to_menu_or_exit()
