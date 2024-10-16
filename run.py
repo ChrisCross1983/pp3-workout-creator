@@ -35,7 +35,7 @@ def main_menu():
     print("3. Exit Program")
     print("--------------------------------")
 
-    choice = input("Please choose an option (1, 2 or 3): ")
+    choice = input("Please choose an option (1, 2 or 3):\n")
 
     if choice == "1":
         create_workout()
