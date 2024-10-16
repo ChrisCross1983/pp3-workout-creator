@@ -1,32 +1,50 @@
-![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
+# Workout Creator
 
-Welcome,
+The Workout Creator is a Python program designed to help users create personalized workout routines based on their preferences. It runs in the terminal, offering a convenient way to generate full-body workouts that include warm-up, main workout, and cool-down exercises.
 
-This is the Code Institute student template for deploying your third portfolio project, the Python command-line project. The last update to this file was: **May 14, 2024**
+Here is the live version of my project: [Link to the Workout Creator Program](https://workout-creator-228871cd4fa2.herokuapp.com/)
 
-## Reminders
+![Screenshot of App on different screens](docs/responsive_pp3.png)
 
-- Your code must be placed in the `run.py` file
-- Your dependencies must be placed in the `requirements.txt` file
-- Do not edit any of the other files or your code may not deploy properly
+## How to use
 
-## Creating the Heroku app
+The Workout Creator is designed to be simple and user-friendly. Users can specify their desired workout duration and select a difficulty level (easy, medium, hard). Based on these inputs, the program generates a complete workout plan.
 
-When you create the app, you will need to add two buildpacks from the _Settings_ tab. The ordering is as follows:
+1. Start the Program: Run the program in your terminal to be greeted by the main menu.
+2. Create a Workout: Choose the workout duration (between 10 and 60 minutes) and the difficulty level (easy, medium, hard).
+   The program will generate exercises targeting different muscle groups.
+3. Save and View Workouts: You can save generated workout and access them later.
+4. Warm-Up and Cool-Down: Every workout includes fixed warm-up and cool-down to help prevent injury.
 
-1. `heroku/python`
-2. `heroku/nodejs`
+## **Features**
 
-You must then create a _Config Var_ called `PORT`. Set this to `8000`
+### Existing Features
 
-If you have credentials, such as in the Love Sandwiches project, you must create another _Config Var_ called `CREDS` and paste the JSON into the value field.
++ **User-Friendly Menus**: The main menu allows users to create a new workout, view saved workouts, or exit the program.
 
-Connect your GitHub repository and deploy as normal.
+![Screenshot of Main Menu](docs\features\main_menu_pp3.png)
 
-## Constraints
++ **Workout Customization**: Input workout duration and difficulty to generate personalized workout plans.
 
-The deployment terminal is set to 80 columns by 24 rows. That means that each line of text needs to be 80 characters or less otherwise it will be wrapped onto a second line.
+![Screenshot of Workout Customization](docs\features\workout_customization_pp3.png)
 
----
++ **Random Exercise Selection**: Exercises are selected randomly from predefined categories, ensuring variety.
 
-Happy coding!
+![Screenshot of Random Workout](docs\features\random_workout_pp3.png)
+
++ **Input Validation**: Ensures users enter valid numbers and choices throughout the program.
+
+![Screenshot of Input Validation](docs\features\input_validation_pp3.png)
+
++ **Save and View previous Workouts**: Users can save workouts and view them later for tracking progress.
+
+![Screenshot of Input Validation](docs\features\saved_workouts_pp3.png)
+
+### Future Features
+
+- **Exercise Customization**: Allow users to choose specific exercises or muscle groups
+- **Difficulty Progression**: Track user progress and recommend gradually increasing workout intensity.
+- **Integrated Timer**: Add a timer to help users keep track of workout sets and rest periods.
+- **Workout Analytics**: Provide insights and analysis of saved workout sessions to help users track their fitness journey.
+
+
