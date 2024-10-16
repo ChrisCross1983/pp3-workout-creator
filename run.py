@@ -90,7 +90,8 @@ def create_workout():
     cool_down_data = sheet_cool_down.get_all_records()
 
     # Generate main workout
-    workout_plan = generate_workout(filtered_exercises, workout_duration)
+    workout_plan = generate_workout(
+        filtered_exercises, workout_duration, difficulty)
 
     # Display the complete workout (Warm-Up, Main Workout, Cool-Down)
     print_sorted_workout(workout_plan, warm_up_data, cool_down_data)
@@ -113,7 +114,7 @@ def create_workout():
     return_to_menu_or_exit()
 
 
-def generate_workout(exercises_data, workout_duration):
+def generate_workout(exercises_data, workout_duration, difficulty_level):
     total_time = 0
     workout_plan = []
     used_exercises = []
@@ -121,21 +122,36 @@ def generate_workout(exercises_data, workout_duration):
     # Defining muscle groups
     muscle_groups = set(
         exercise['Muscle Group'] for exercise in exercises_data
+        if exercise['Difficulty Level'] == difficulty_level
     )
 
     # Step 1: Choose minimum one exercise of each muscle group
     for muscle_group in muscle_groups:
         muscle_exercises = [
             exercise for exercise in exercises_data
-            if exercise['Muscle Group'] == muscle_group
+            if exercise['Muscle Group'] == muscle_group and
+            exercise['Difficulty Level'] == difficulty_level
         ]
         if muscle_exercises:
             random_exercise = random.choice(muscle_exercises)
-            exercise_time = math.ceil(
-                random_exercise.get('Repetitions/Duration', 0)
-                * random_exercise.get('Time per Rep (Sec)', 0) / 60
-            )
+            sets = random_exercise.get('Sets', 3)
+
+            # Check if the exercise is static or dynamic
+            repetitions = random_exercise['Repetitions/Duration']
+            if isinstance(repetitions, str) and repetitions.lower() == 'static':
+                # Static exercise
+                exercise_time = math.ceil(
+                    int(random_exercise['Time per Rep (Sec)']) * sets / 60
+                )
+            else:
+                # Dynamic exercise
+                exercise_time = math.ceil(
+                    int(repetitions) *
+                    int(random_exercise['Time per Rep (Sec)']) * sets / 60
+                )
+
             if total_time + exercise_time <= workout_duration:
+                random_exercise['Sets'] = sets
                 workout_plan.append(random_exercise)
                 used_exercises.append(random_exercise)
                 total_time += exercise_time
@@ -144,15 +160,27 @@ def generate_workout(exercises_data, workout_duration):
     while total_time < workout_duration:
         remaining_exercises = [
             exercise for exercise in exercises_data
-            if exercise not in used_exercises
+            if exercise not in used_exercises and
+            exercise['Difficulty Level'] == difficulty_level
         ]
         if remaining_exercises:
             random_exercise = random.choice(remaining_exercises)
-            exercise_time = (
-                random_exercise.get('Repetitions/Duration')
-                * random_exercise.get('Time per Rep (Sec)') / 60
-            )
+            sets = random_exercise.get('Sets', 3)
+
+            repetitions = random_exercise['Repetitions/Duration']
+            if isinstance(repetitions, str) and repetitions.lower() == 'static':
+                # Static exercise
+                exercise_time = math.ceil(
+                    int(random_exercise['Time per Rep (Sec)']) * sets / 60
+                )
+            else:
+                # Dynamic exercise
+                exercise_time = math.ceil(
+                    int(repetitions) *
+                    int(random_exercise['Time per Rep (Sec)']) * sets / 60
+                )
             if total_time + exercise_time <= workout_duration:
+                random_exercise['Sets'] = sets
                 workout_plan.append(random_exercise)
                 used_exercises.append(random_exercise)
                 total_time += exercise_time
@@ -160,7 +188,6 @@ def generate_workout(exercises_data, workout_duration):
                 break
         else:
             break
-
     return workout_plan
 
 
@@ -196,10 +223,23 @@ def print_sorted_workout(workout_plan, warm_up_data, cool_down_data):
             print(f"\n{category} exercises:")
             print("------------------------")
             for exercise in exercise_in_category:
-                print(
-                    f"{exercise['Exercise']} ({exercise['Muscle Group']}): "
-                    f"{exercise['Repetitions/Duration']} reps"
-                )
+                sets = exercise.get('Sets', 1)
+                repetitions = exercise['Repetitions/Duration']
+
+                if isinstance(repetitions, str) and repetitions.lower() == 'static':
+                    # Static exercise - use the time value
+                    time_per_rep = exercise['Time per Rep (Sec)']
+                    print(
+                        f"{exercise['Exercise']} ({exercise['Muscle Group']}): "
+                        f"Hold for {time_per_rep} seconds x {sets} sets"
+                    )
+                else:
+                    # Dynamic exercise - use repetitions value
+                    print(
+                        f"{exercise['Exercise']} ({exercise['Muscle Group']}): "
+                        f"{repetitions} reps x {sets} sets"
+                    )
+
     # Display Cool-Down
     print(f"\n{BLUE}Cool-Down:{RESET}")
     print("------------")
