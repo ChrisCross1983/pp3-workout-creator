@@ -338,8 +338,8 @@ def show_saved_workouts():
         print(f"\nWorkout for: {date}")
         print("-------------------------")
         print(
-            f"| {'Muscle Group':<12} | {'Exercise':<27} |"
-            f" {'Repetitions/Duration':<20} | {'Difficulty':<10} |")
+            f"| {'Muscle Group':<12} | {'Exercise':<27}"
+            f"| {'Repetitions/Duration':<20} | {'Difficulty':<10} |")
         print("-------------------------")
 
         # Sort workouts by muscle groups and order
