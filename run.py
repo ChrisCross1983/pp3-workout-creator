@@ -20,6 +20,16 @@ SHEET = GSPREAD_CLIENT.open('workouts')
 def main_menu():
     print("Welcome to the Workout Generator")
     print("--------------------------------")
+    print(
+        "Note: The training time information only"
+        " refers to the pure workout.")
+    print(
+        "A warm-up (approx. 5 minutes) and a cool-down"
+        " (approx. 5 minutes) are automatically added to the workout.")
+    print(
+        "We recommend that you do not skip"
+        " the warm-up and cool-down to avoid injury.")
+    print("--------------------------------")
     print("1. Create a new workout")
     print("2. Show saved workouts")
     print("3. Exit Program")
@@ -137,7 +147,9 @@ def generate_workout(exercises_data, workout_duration, difficulty_level):
             sets = random_exercise.get('Sets', 3)
 
             # Check if the exercise is static or dynamic
-            if isinstance(random_exercise['Repetitions/Duration'], str) and random_exercise['Repetitions/Duration'].lower() == 'static':
+            if isinstance(random_exercise['Repetitions/Duration'], str) and \
+                    random_exercise['Repetitions/Duration'].lower() \
+                    == 'static':
                 # Static exercise
                 exercise_time = math.ceil(
                     int(random_exercise['Time per Rep (Sec)']) * sets / 60
@@ -167,7 +179,8 @@ def generate_workout(exercises_data, workout_duration, difficulty_level):
             sets = random_exercise.get('Sets', 3)
 
             repetitions = random_exercise['Repetitions/Duration']
-            if isinstance(repetitions, str) and repetitions.lower() == 'static':
+            if isinstance(repetitions, str) and \
+                    repetitions.lower() == 'static':
                 # Static exercise
                 exercise_time = math.ceil(
                     int(random_exercise['Time per Rep (Sec)']) * sets / 60
@@ -225,17 +238,20 @@ def print_sorted_workout(workout_plan, warm_up_data, cool_down_data):
                 sets = exercise.get('Sets', 1)
                 repetitions = exercise['Repetitions/Duration']
 
-                if isinstance(repetitions, str) and repetitions.lower() == 'static':
+                if isinstance(repetitions, str) and \
+                        repetitions.lower() == 'static':
                     # Static exercise - use the time value
                     time_per_rep = exercise['Time per Rep (Sec)']
                     print(
-                        f"{exercise['Exercise']} ({exercise['Muscle Group']}): "
+                        f"{exercise['Exercise']} "
+                        f"({exercise['Muscle Group']}): "
                         f"Hold for {time_per_rep} seconds x {sets} sets"
                     )
                 else:
                     # Dynamic exercise - use repetitions value
                     print(
-                        f"{exercise['Exercise']} ({exercise['Muscle Group']}): "
+                        f"{exercise['Exercise']} "
+                        f"({exercise['Muscle Group']}): "
                         f"{repetitions} reps x {sets} sets"
                     )
 
@@ -243,10 +259,21 @@ def print_sorted_workout(workout_plan, warm_up_data, cool_down_data):
     print(f"\n{BLUE}Cool-Down:{RESET}")
     print("------------")
     for cool_down_exercise in cool_down_data:
-        print(
-            f"{cool_down_exercise['Exercise']}: "
-            f"{cool_down_exercise['Repetitions/Duration']} reps"
-        )
+        repetitions = cool_down_exercise['Repetitions/Duration']
+
+        if isinstance(repetitions, str) and repetitions.lower() == 'static':
+            # Static cool-down exercise - use the time value
+            time_per_rep = cool_down_exercise['Time per Rep (Sec)']
+            print(
+                f"{cool_down_exercise['Exercise']}: "
+                f"Hold for {time_per_rep} seconds (perhaps each side)"
+            )
+        else:
+            # Dynamic cool-down exercise - use repetitions value
+            print(
+                f"{cool_down_exercise['Exercise']}: "
+                f"{repetitions} reps"
+            )
 
 
 def save_workout(workout_plan):
@@ -269,7 +296,8 @@ def save_workout(workout_plan):
                 # Check, if exercise is static or dynamic
                 repetitions = exercise['Repetitions/Duration']
                 sets = exercise.get('Sets', 3)
-                if isinstance(repetitions, str) and repetitions.lower() == 'static':
+                if isinstance(repetitions, str) and \
+                        repetitions.lower() == 'static':
                     # Static exercise - calculate total hold time
                     total_time = int(exercise['Time per Rep (Sec)']) * sets
                     reps_duration = f"Hold for {total_time} seconds"
@@ -321,7 +349,8 @@ def show_saved_workouts():
             # show the time correct for static exercises
             reps_duration = workout['Repetitions/Duration']
             if reps_duration == 'static':
-                reps_duration = f"Hold for {workout['Time per Rep (Sec)']} seconds"
+                reps_duration = f"Hold for \
+                    {workout['Time per Rep (Sec)']} seconds"
 
             print(
                 f"| {workout['Muscle Group']:<12} | {workout['Exercise']:<27}"
