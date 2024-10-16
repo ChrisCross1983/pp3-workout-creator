@@ -137,8 +137,7 @@ def generate_workout(exercises_data, workout_duration, difficulty_level):
             sets = random_exercise.get('Sets', 3)
 
             # Check if the exercise is static or dynamic
-            repetitions = random_exercise['Repetitions/Duration']
-            if isinstance(repetitions, str) and repetitions.lower() == 'static':
+            if isinstance(random_exercise['Repetitions/Duration'], str) and random_exercise['Repetitions/Duration'].lower() == 'static':
                 # Static exercise
                 exercise_time = math.ceil(
                     int(random_exercise['Time per Rep (Sec)']) * sets / 60
@@ -146,7 +145,7 @@ def generate_workout(exercises_data, workout_duration, difficulty_level):
             else:
                 # Dynamic exercise
                 exercise_time = math.ceil(
-                    int(repetitions) *
+                    int(random_exercise['Repetitions/Duration']) *
                     int(random_exercise['Time per Rep (Sec)']) * sets / 60
                 )
 
@@ -267,11 +266,22 @@ def save_workout(workout_plan):
         ]
         if exercise_in_category:
             for exercise in exercise_in_category:
+                # Check, if exercise is static or dynamic
+                repetitions = exercise['Repetitions/Duration']
+                sets = exercise.get('Sets', 3)
+                if isinstance(repetitions, str) and repetitions.lower() == 'static':
+                    # Static exercise - calculate total hold time
+                    total_time = int(exercise['Time per Rep (Sec)']) * sets
+                    reps_duration = f"Hold for {total_time} seconds"
+                else:
+                    # Dynamic exercise - use repetitons value
+                    reps_duration = f"{repetitions} reps x {sets} sets"
+
                 row = [
                     today, "Main Workout",
                     exercise['Muscle Group'],
                     exercise['Exercise'],
-                    exercise['Repetitions/Duration'],
+                    reps_duration,
                     exercise.get('Time per Rep (Sec)', 'N/A'),
                     exercise['Difficulty Level']
                 ]
@@ -303,11 +313,19 @@ def show_saved_workouts():
             f"| {'Muscle Group':<12} | {'Exercise':<18} |"
             f" {'Reps/Duration':<14} | {'Difficulty':<10} |")
         print("-------------------------")
-        for workout in workouts:
+
+        # Sort workouts by muscle groups and order
+        sorted_workouts = sorted(workouts, key=lambda x: x['Muscle Group'])
+
+        for workout in sorted_workouts:
+            # show the time correct for static exercises
+            reps_duration = workout['Reps/Duration']
+            if reps_duration == 'static':
+                reps_duration = f"Hold for {workout['Time per Rep (Sec)']} seconds"
+
             print(
                 f"| {workout['Muscle Group']:<12} | {workout['Exercise']:<18}"
-                f"| {workout['Repetitions/Duration']:<14}"
-                f"| {workout['Difficulty Level']:<10} |"
+                f"| {reps_duration:<14} | {workout['Difficulty Level']:<10} |"
             )
         print("-------------------------")
 
