@@ -310,8 +310,8 @@ def show_saved_workouts():
         print(f"\nWorkout for: {date}")
         print("-------------------------")
         print(
-            f"| {'Muscle Group':<12} | {'Exercise':<18} |"
-            f" {'Reps/Duration':<14} | {'Difficulty':<10} |")
+            f"| {'Muscle Group':<12} | {'Exercise':<27} |"
+            f" {'Repetitions/Duration':<20} | {'Difficulty':<10} |")
         print("-------------------------")
 
         # Sort workouts by muscle groups and order
@@ -319,13 +319,13 @@ def show_saved_workouts():
 
         for workout in sorted_workouts:
             # show the time correct for static exercises
-            reps_duration = workout['Reps/Duration']
+            reps_duration = workout['Repetitions/Duration']
             if reps_duration == 'static':
                 reps_duration = f"Hold for {workout['Time per Rep (Sec)']} seconds"
 
             print(
-                f"| {workout['Muscle Group']:<12} | {workout['Exercise']:<18}"
-                f"| {reps_duration:<14} | {workout['Difficulty Level']:<10} |"
+                f"| {workout['Muscle Group']:<12} | {workout['Exercise']:<27}"
+                f"| {reps_duration:<20} | {workout['Difficulty Level']:<10} |"
             )
         print("-------------------------")
 
