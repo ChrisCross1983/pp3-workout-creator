@@ -9,7 +9,7 @@ import maskpass
 
 # Password protection
 def password_protect():
-    correct_password = "Ramona2024!"
+    correct_password = "CR020607!"
     entered_password = maskpass.askpass("Please enter password: ")
 
     if entered_password != correct_password:
