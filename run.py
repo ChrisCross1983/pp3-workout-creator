@@ -4,6 +4,24 @@ import random
 import math
 from datetime import datetime
 import time
+import maskpass
+
+
+# Password protection
+def password_protect():
+    correct_password = "Ramona2024!"
+    entered_password = maskpass.askpass("Please enter password: ")
+
+    if entered_password != correct_password:
+        print("Wrong password. Program will be closed.")
+        exit()
+    else:
+        print("You have access to the program.")
+        print("-------------------------------")
+
+
+password_protect()
+
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
